@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6b3f">
+<title>TerraTest · Labo HCl & H2O2</title>
+<style>
+:root{--bg:#f4f7f1;--card:#fff;--ink:#14231a;--mut:#4b5f52;--line:#d5e0d3;--pri:#1f6b3f;--pri-ink:#fff;--acc:#e8f3e6;--warn:#b45309;--bad:#b42318;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1712;--card:#16231b;--ink:#eaf3ec;--mut:#9db3a4;--line:#2b3d31;--pri:#5fcb88;--pri-ink:#0c1a11;--acc:#1d3025;--warn:#f0a94a;--bad:#ff8a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1712;--card:#16231b;--ink:#eaf3ec;--mut:#9db3a4;--line:#2b3d31;--pri:#5fcb88;--pri-ink:#0c1a11;--acc:#1d3025;--warn:#f0a94a;--bad:#ff8a7a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--pri);color:var(--pri-ink);display:flex;align-items:center;gap:10px;padding:12px 16px}
+header h1{font-size:19px;margin:0;flex:1}
+header button{background:transparent;border:1.5px solid currentColor;color:inherit;border-radius:10px;padding:6px 10px;font-size:15px}
+main{max-width:760px;margin:0 auto;padding:16px 16px 96px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border:0;color:var(--mut);padding:9px 2px 8px;font-size:12px;font-weight:600}
+nav button span{display:block;font-size:21px}
+nav button[aria-selected=true]{color:var(--pri)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px}
+h2{margin:0 0 8px;font-size:21px}h3{margin:14px 0 6px;font-size:17px}
+p{margin:6px 0}.mut{color:var(--mut);font-size:15px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.stat{background:var(--acc);border-radius:14px;padding:12px;text-align:center}.stat b{font-size:28px;display:block}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:15px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px}
+.btn{display:inline-block;background:var(--pri);color:var(--pri-ink);border:0;border-radius:12px;padding:12px 18px;font:inherit;font-weight:700;margin:6px 6px 0 0;transition:transform .1s}
+.btn:active{transform:scale(.95)}
+.btn.sec{background:var(--acc);color:var(--ink);border:1.5px solid var(--line)}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:11px 12px;margin:8px 0;font:inherit;transition:all .15s}
+.opt[aria-pressed=true]{border-color:var(--pri);background:var(--acc)}
+.opt small{display:block;color:var(--mut)}
+.res{border-left:6px solid var(--pri);background:var(--acc);border-radius:12px;padding:12px;margin-top:12px;animation:pop .4s}
+.res.warn{border-color:var(--warn)}.res.bad{border-color:var(--bad)}
+.safe{border-left:6px solid var(--warn);background:var(--acc);border-radius:12px;padding:12px}
+.steps{display:flex;gap:6px;margin-bottom:12px}
+.steps div{flex:1;text-align:center;font-size:12px;font-weight:700;padding:6px 2px;border-radius:10px;background:var(--acc);color:var(--mut);transition:all .3s}
+.steps div.on{background:var(--pri);color:var(--pri-ink)}.steps div.done{color:var(--pri)}
+canvas{width:100%;display:block;border-radius:14px;cursor:pointer;touch-action:manipulation}
+.timer{font-size:40px;font-weight:800;text-align:center;font-variant-numeric:tabular-nums}
+.entry{border-top:1px solid var(--line);padding:10px 0}.entry img{max-width:140px;border-radius:8px;display:block;margin-top:6px}
+.tag{display:inline-block;background:var(--acc);border-radius:99px;padding:1px 10px;font-size:13px;font-weight:700}
+.tabs{display:none}.tabs.on{display:block;animation:fade .35s}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+#report{display:none}
+@media print{header,nav,.tabs,main>*:not(#report){display:none!important}#report{display:block!important}body{background:#fff;color:#000}}
+code{background:var(--acc);padding:1px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+<header><h1>🌱 TerraTest</h1><button onclick="theme()">◐ Thème</button></header>
+<main>
+<section id="t-home" class="tabs on"></section>
+<section id="t-hcl" class="tabs"></section>
+<section id="t-h2o2" class="tabs"></section>
+<section id="t-log" class="tabs"></section>
+<section id="t-ref" class="tabs"></section>
+<div id="report"></div>
+</main>
+<nav>
+<button data-t="home" aria-selected="true" onclick="tab('home')"><span>🏠</span>Accueil</button>
+<button data-t="hcl" aria-selected="false" onclick="tab('hcl')"><span>🧪</span>HCl</button>
+<button data-t="h2o2" aria-selected="false" onclick="tab('h2o2')"><span>🫧</span>H₂O₂</button>
+<button data-t="log" aria-selected="false" onclick="tab('log')"><span>📒</span>Carnet</button>
+<button data-t="ref" aria-selected="false" onclick="tab('ref')"><span>📚</span>Réf.</button>
+</nav>
+<script>
+var SOILS=[
+{n:"Sol brun acide (granite)",tex:"Limono-sableuse",col:["#6b4a2f","#8a6440","#b08a5c"],calc:[0,0,0],mo:[2,1,0]},
+{n:"Sol limoneux neutre",tex:"Limoneuse",col:["#5b3f29","#7d5a3a","#a7835a"],calc:[0,1,2],mo:[2,1,1]},
+{n:"Rendzine (calcaire superficiel)",tex:"Limono-argileuse",col:["#5a4632","#9c8666","#d2c4a4"],calc:[3,4,4],mo:[2,1,0]},
+{n:"Argilo-calcaire profond",tex:"Argileuse",col:["#6a4a33","#8f6d4b","#c9b089"],calc:[2,3,4],mo:[1,1,0]}];
+var HZ=[["Horizon de surface",5],["Horizon intermédiaire",20],["Horizon profond",40]];
+var HCL=[
+{t:"Aucune réaction",d:"Aucune bulle",lvl:"Pas de calcaire",pH:"Sol acide",c:"Apport d’amendement calcique de type dolomie broyée ; éviter la chaux.",k:"warn"},
+{t:"Très faible",d:"Quelques bulles isolées",lvl:"Très peu de calcaire",pH:"Sol neutre",c:"Entretenir le statut calcique.",k:""},
+{t:"Faible",d:"1 à 2 couches de petites bulles",lvl:"Un peu de calcaire total",pH:"",c:"Surveiller l’évolution du statut calcique.",k:""},
+{t:"Moyenne",d:"Plusieurs couches de bulles",lvl:"Sol modérément calcaire",pH:"",c:"Risque de chlorose.",k:"warn"},
+{t:"Vive à violente",d:"Grosses bulles et mousse",lvl:"Sol très calcaire",pH:"",c:"Risque de chlorose élevé.",k:"bad"}];
+var OX=[
+{t:"Pas de bulles / faible",d:"Aucune ou très peu de bulles",lvl:"Matière organique ou biomasse microbienne faible",pH:"",c:"Augmenter les restitutions organiques (couverts, compost).",k:"warn"},
+{t:"Bulles modérées",d:"Effervescence nette sans mousse",lvl:"Activité biologique moyenne",pH:"",c:"Maintenir les apports organiques.",k:""},
+{t:"Effervescence intense / mousse",d:"Mousse en surface ou en profondeur",lvl:"Forte activité biologique, bon stock d’humus stable",pH:"",c:"Conserver : couverture du sol, rotations diversifiées.",k:""}];
+var REFS=[
+["Chambres d’agriculture (Indre, Var)","Fiches de tests simples de terrain : réaction à l’HCl."],
+["Groupes DEPHY (Ecophyto)","Retours d’expérience de collectifs d’agriculteurs sur la santé des sols."],
+["USDA NRCS — Soil Survey Technical Notes","Description des sols et tests d’effervescence."],
+["FAO — Global Soil Doctors Programme","Formation au diagnostic de terrain des sols."]];
+function $(s){return document.querySelector(s)}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var E=[];try{E=JSON.parse(localStorage.getItem("tt-e")||"[]")}catch(e){}
+function save(){try{localStorage.setItem("tt-e",JSON.stringify(E))}catch(e){}}
+var ok=0,tot=0,L={},S={},grain=[];
+function newLab(k){L[k]={step:0,epi:[0,0,0],soil:2,hz:0,parcelle:"",note:"",guess:null,drops:0,sec:0,run:false,t0:0,photo:null,geo:null};
+S[k]={px:320,cx:320,drops:[],spots:[],bub:[],foam:[],sq:0}}
+newLab("hcl");newLab("h2o2");
+for(var i=0;i<900;i++)grain.push([Math.random()*640,Math.random()*260,Math.random()*2.4+.5,Math.random()]);
+function lev(k){var s=SOILS[L[k].soil];return k==="hcl"?s.calc[L[k].hz]:s.mo[L[k].hz]}
+function T(k){return k==="hcl"?HCL:OX}
+
+function tab(n){var a=document.querySelectorAll(".tabs");for(var i=0;i<a.length;i++)a[i].classList.toggle("on",a[i].id==="t-"+n);
+var b=document.querySelectorAll("nav button");for(i=0;i<b.length;i++)b[i].setAttribute("aria-selected",b[i].dataset.t===n);
+if(n==="home")home();if(n==="log")log();if(n==="hcl"||n==="h2o2")render(n);scrollTo(0,0)}
+function theme(){var r=document.documentElement;var d=r.dataset.theme==="dark"||(!r.dataset.theme&&matchMedia("(prefers-color-scheme:dark)").matches);r.dataset.theme=d?"light":"dark"}
+
+function home(){var n=E.length,h=E.filter(function(e){return e.type==="HCl"}).length;
+var last=E.slice(0,3).map(function(e){return'<div class="entry"><b>'+esc(e.parcelle||"Sans nom")+'</b> · '+e.type+' · '+e.depth+' cm<br><span class="tag">'+esc(e.res.t)+'</span></div>'}).join("")||'<p class="mut">Aucun test enregistré pour le moment.</p>';
+$("#t-home").innerHTML='<div class="card"><h2>Tableau de bord</h2><div class="grid"><div class="stat"><b>'+n+'</b>tests</div><div class="stat"><b>'+h+'</b>HCl</div><div class="stat"><b>'+(n-h)+'</b>H₂O₂</div><div class="stat"><b>'+ok+'/'+tot+'</b>bonnes lectures</div></div>'+
+'<button class="btn" onclick="tab(\'hcl\')">🧪 Test HCl</button><button class="btn" onclick="tab(\'h2o2\')">🫧 Test H₂O₂</button></div>'+
+'<div class="card"><h3>Derniers tests</h3>'+last+'</div>'+
+'<div class="card"><h2>Protocoles</h2><h3>HCl dilué (≈ 10 %)</h3><p>Quelques gouttes sur la motte, observer 10 à 30 s : intensité et durée des bulles.</p><h3>H₂O₂ (12 % ou 30 %)</h3><p>Quelques gouttes, chronomètre : durée et intensité de l’effervescence.</p>'+
+'<div class="safe"><b>⚠ Sécurité</b> : gants, lunettes, blouse. Toujours verser l’acide dans l’eau. Flacons étiquetés, rinçage à l’eau claire en cas de contact.</div></div>'}
+
+function render(k){var l=L[k],st=l.step,names=["Préparer","Verser","Observer","Bilan"];
+var h='<div class="card"><h2>'+(k==="hcl"?"Test à l’acide chlorhydrique":"Test à l’eau oxygénée")+'</h2><div class="steps">'+names.map(function(x,i){return'<div class="'+(i===st?"on":i<st?"done":"")+'">'+(i<st?"✓ ":(i+1)+". ")+x+'</div>'}).join("")+'</div>';
+if(st===0){
+h+=(k==="hcl"?'<p>Le carbonate de calcium réagit avec l’acide : <code>CaCO₃ + 2 HCl → CaCl₂ + H₂O + CO₂↑</code>. Le CO₂ forme les bulles ; plus il y en a, plus le sol est calcaire.</p>':'<p>L’eau oxygénée est décomposée en <code>H₂O + O₂↑</code> par les catalases des microbes, la matière organique et les oxydes de manganèse.</p>')+
+'<h3>1. Équipement de protection</h3>'+["🧤 J’ai mis mes gants","🥽 J’ai mis mes lunettes","🏷 Mon flacon est étiqueté et dilué"].map(function(x,i){return'<button class="opt" aria-pressed="'+(l.epi[i]?"true":"false")+'" onclick="epi(\''+k+'\','+i+')">'+(l.epi[i]?"✅ ":"⬜ ")+x+'</button>'}).join("")+
+'<h3>2. Échantillon</h3><label>Sol</label><select onchange="L.'+k+'.soil=+this.value">'+SOILS.map(function(s,i){return'<option value="'+i+'"'+(i===l.soil?" selected":"")+'>'+s.n+'</option>'}).join("")+'</select>'+
+'<label>Profondeur du prélèvement</label><select onchange="L.'+k+'.hz=+this.value">'+HZ.map(function(z,i){return'<option value="'+i+'"'+(i===l.hz?" selected":"")+'>'+z[1]+' cm — '+z[0]+'</option>'}).join("")+'</select>'+
+'<label>Parcelle</label><input value="'+esc(l.parcelle)+'" oninput="L.'+k+'.parcelle=this.value" placeholder="ex. Parcelle B3">'+
+'<button class="btn" onclick="go(\''+k+'\',1)">Continuer →</button>'}
+if(st===1){
+h+='<p>Touche l’échantillon pour placer la pipette et faire tomber une goutte, ou utilise le bouton. Plusieurs gouttes sont possibles.</p>'+
+(k==="h2o2"?'<div class="timer" id="tm">0,0 s</div>':'')+
+'<canvas id="cv-'+k+'" width="640" height="400" onpointerdown="tap(event,\''+k+'\')"></canvas>'+
+'<button class="btn" onclick="addDrop(\''+k+'\')">💧 Ajouter une goutte</button>'+
+(k==="h2o2"?'<button class="btn sec" onclick="stopT()">⏱ Arrêter le chrono</button>':'')+
+'<button class="btn sec" onclick="go(\''+k+'\',2)">J’ai observé →</button>'}
+if(st===2){var A=T(k);
+h+='<p><b>Que vois-tu ?</b> Dernières gouttes sur l’horizon à '+HZ[l.hz][1]+' cm'+(k==="h2o2"?' (durée : '+l.sec.toFixed(1).replace(".",",")+' s)':'')+'.</p>'+
+A.map(function(x,i){var pr=l.guess===i;return'<button class="opt" aria-pressed="'+pr+'"'+(l.guess===null?' onclick="guess(\''+k+'\','+i+')"':'')+'>'+x.t+'<small>'+x.d+'</small></button>'}).join("");
+if(l.guess!==null){var r=A[lev(k)],good=l.guess===lev(k);
+h+='<div class="res '+(good?"":"warn")+'"><b>'+(good?"✅ Bien vu !":"❌ Pas tout à fait.")+'</b> Observation attendue : '+r.t+'.</div><button class="btn" onclick="go(\''+k+'\',3)">Voir le bilan →</button>'}}
+if(st===3){var r2=T(k)[lev(k)];
+h+='<div class="res '+r2.k+'"><b>'+r2.lvl+'</b>'+(r2.pH?" · "+r2.pH:"")+'<p>'+r2.c+'</p></div>'+
+'<label>Remarques</label><textarea rows="2" oninput="L.'+k+'.note=this.value">'+esc(l.note)+'</textarea>'+
+'<button class="btn sec" onclick="geo(\''+k+'\')">📍 Position</button><label class="btn sec" style="display:inline-block;margin-bottom:0">📷 Photo<input type="file" accept="image/*" capture="environment" hidden onchange="photo(\''+k+'\',this)"></label><span class="mut" id="st-'+k+'"></span><br>'+
+'<button class="btn" onclick="saveE(\''+k+'\')">💾 Enregistrer au carnet</button><button class="btn sec" onclick="newLab(\''+k+'\');render(\''+k+'\')">↺ Nouveau test</button>'}
+$("#t-"+k).innerHTML=h+'</div>'}
+function epi(k,i){L[k].epi[i]=L[k].epi[i]?0:1;render(k)}
+function go(k,s){var l=L[k];
+if(s===1){if(!(l.epi[0]&&l.epi[1]&&l.epi[2])){alert("Coche d’abord les 3 équipements de sécurité.");return}S[k]=S[k]||{};S[k].px=320;S[k].cx=320;S[k].drops=[];S[k].spots=[];S[k].bub=[];S[k].foam=[];l.drops=0;l.sec=0;l.run=false}
+if(s===2){if(l.drops===0){alert("Ajoute au moins une goutte.");return}l.run=false;l.guess=null}
+l.step=s;render(k)}
+function tap(e,k){var c=e.currentTarget,r=c.getBoundingClientRect();S[k].px=Math.max(70,Math.min(570,(e.clientX-r.left)*640/r.width));setTimeout(function(){addDrop(k)},250)}
+function addDrop(k){var l=L[k],s=S[k];s.drops.push({x:s.px,y:120,v:0});s.sq=1;l.drops++;if(k==="h2o2"&&!l.run){l.run=true;l.t0=Date.now()-l.sec*1000}}
+function stopT(){var l=L.h2o2;if(l.run){l.sec=(Date.now()-l.t0)/1000;l.run=false}}
+function guess(k,i){L[k].guess=i;tot++;if(i===lev(k))ok++;render(k)}
+function geo(k){var m=$("#st-"+k);if(!navigator.geolocation){m.textContent=" indisponible";return}navigator.geolocation.getCurrentPosition(function(p){L[k].geo=[+p.coords.latitude.toFixed(5),+p.coords.longitude.toFixed(5)];m.textContent=" ✓ position"},function(){m.textContent=" position refusée"})}
+function photo(k,inp){var f=inp.files[0];if(!f)return;var im=new Image();im.onload=function(){var s=Math.min(1,700/im.width),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);L[k].photo=c.toDataURL("image/jpeg",.6);$("#st-"+k).textContent=" ✓ photo"};im.src=URL.createObjectURL(f)}
+function saveE(k){var l=L[k],r=T(k)[lev(k)];
+E.unshift({id:Date.now(),type:k==="hcl"?"HCl":"H₂O₂",date:new Date().toLocaleString("fr-FR"),parcelle:l.parcelle,depth:HZ[l.hz][1],texture:SOILS[l.soil].tex,res:{t:r.t,lvl:r.lvl,c:r.c},note:l.note,geo:l.geo,photo:l.photo,dur:k==="h2o2"?l.sec:null});
+save();newLab(k);tab("log")}
+
+function log(){var rows=E.map(function(e){return'<div class="entry"><b>'+esc(e.parcelle||"Sans nom")+'</b> <span class="tag">'+e.type+'</span> <span class="mut">'+e.date+'</span><br>'+e.depth+' cm · '+e.texture+(e.dur?' · '+e.dur.toFixed(1).replace(".",",")+' s':'')+'<br><b>'+esc(e.res.t)+'</b> — '+esc(e.res.lvl)+'<br><span class="mut">'+esc(e.res.c)+'</span>'+(e.note?'<br><i>'+esc(e.note)+'</i>':'')+(e.geo?'<br><span class="mut">📍 '+e.geo.join(", ")+'</span>':'')+(e.photo?'<img src="'+e.photo+'" alt="Réaction">':'')+'<br><button class="btn sec" onclick="del('+e.id+')">Supprimer</button></div>'}).join("")||'<p class="mut">Le carnet est vide.</p>';
+$("#t-log").innerHTML='<div class="card"><h2>Carnet de terrain</h2>'+rows+'<button class="btn" onclick="rep()">📄 Rapport PDF (imprimer)</button><button class="btn sec" onclick="cp()">Copier le texte</button></div>'}
+function del(id){if(confirm("Supprimer ce test ?")){E=E.filter(function(e){return e.id!==id});save();log()}}
+function txt(){return"RAPPORT DE DIAGNOSTIC DU SOL — BTS ACD\n"+E.map(function(e){return"\n"+e.date+" · "+(e.parcelle||"Sans nom")+" · "+e.type+" · "+e.depth+" cm · "+e.texture+"\n→ "+e.res.t+" : "+e.res.lvl+"\nConseil : "+e.res.c+(e.note?"\nRemarque : "+e.note:"")}).join("\n")}
+function cp(){if(navigator.clipboard)navigator.clipboard.writeText(txt()).then(function(){alert("Rapport copié.")},function(){alert("Copie impossible.")})}
+function rep(){$("#report").innerHTML='<h1>Rapport de diagnostic du sol</h1><p>BTS ACD · '+new Date().toLocaleDateString("fr-FR")+'</p>'+E.map(function(e){return'<div style="margin:12px 0;page-break-inside:avoid"><b>'+esc(e.parcelle||"Sans nom")+'</b> — '+e.type+', '+e.depth+' cm, '+e.texture+'<br>'+esc(e.res.t)+' : '+esc(e.res.lvl)+'<br><i>'+esc(e.res.c)+'</i>'+(e.note?'<br>'+esc(e.note):'')+(e.photo?'<br><img src="'+e.photo+'" style="max-width:240px">':'')+'</div>'}).join("");try{window.print()}catch(x){cp()}}
+$("#t-ref").innerHTML='<div class="card"><h2>Références</h2>'+REFS.map(function(r){return'<div class="entry"><b>'+r[0]+'</b><p class="mut">'+r[1]+'</p></div>'}).join("")+'<p class="mut">À compléter avec les références exactes de votre cours.</p></div>';
+
+// ---- animation ----
+function land(k,d){var l=L[k],s=S[k],v=lev(k),same=s.spots.filter(function(p){return Math.abs(p.x-d.x)<50}).length;
+s.spots.push({x:d.x,v:v,t:0,dur:(k==="hcl"?6:11)+v*2+same*2})}
+function draw(k){var c=document.getElementById("cv-"+k);if(!c)return;var g=c.getContext("2d"),l=L[k],s=S[k],so=SOILS[l.soil],top=170;
+g.clearRect(0,0,640,400);g.fillStyle="#d9ddd3";g.fillRect(0,0,640,400);g.fillStyle="#c3c8bd";g.fillRect(0,top+235,640,40);
+g.fillStyle=so.col[l.hz];g.beginPath();g.roundRect?g.roundRect(40,top,560,230,[30,30,14,14]):g.rect(40,top,560,230);g.fill();
+for(var i=0;i<grain.length;i++){var p=grain[i];if(p[0]>50&&p[0]<590&&p[1]<220){g.fillStyle=p[3]>.5?"rgba(0,0,0,.22)":"rgba(255,255,255,.2)";g.beginPath();g.arc(p[0],top+8+p[1],p[2],0,7);g.fill()}}
+s.cx+=(s.px-s.cx)*.15;s.sq*=.9;
+var col=k==="hcl"?"#e3cf3f":"#8cc9f0";
+g.fillStyle="#9aa";g.fillRect(s.cx-5,10,10,6);g.fillStyle="rgba(235,240,245,.9)";g.fillRect(s.cx-9,16,18,80);
+g.fillStyle=col;g.fillRect(s.cx-8,56,16,40);g.beginPath();g.moveTo(s.cx-9,96);g.lineTo(s.cx,118);g.lineTo(s.cx+9,96);g.fill();
+g.fillStyle="#c0392b";g.beginPath();g.ellipse(s.cx,10-s.sq*4,13,10+(-s.sq*3),0,0,7);g.fill();
+for(var j=0;j<s.drops.length;j++){var d=s.drops[j];d.v+=.9;d.y+=d.v;g.fillStyle=col;g.beginPath();g.ellipse(d.x,d.y,5,8,0,0,7);g.fill()}
+s.drops=s.drops.filter(function(d){if(d.y>=top+2){land(k,d);return false}return true});
+for(j=0;j<s.spots.length;j++){var sp=s.spots[j];sp.t+=1/60;g.fillStyle=k==="hcl"?"rgba(220,200,60,.35)":"rgba(150,200,240,.35)";g.beginPath();g.ellipse(sp.x,top+3,24,8,0,0,7);g.fill();
+if(sp.t<sp.dur&&sp.v>0){var r=k==="hcl"?[0,.35,.9,1.8,3.4][sp.v]:[0,.8,2.6][sp.v],n=Math.floor(r)+(Math.random()<r%1?1:0);
+for(i=0;i<n;i++)s.bub.push({x:sp.x+(Math.random()-.5)*50,y:top+Math.random()*10,r:1.3+Math.random()*(1.5+sp.v*(k==="hcl"?1.2:2)),a:0,l:45+Math.random()*50});
+if((k==="hcl"&&sp.v===4)||(k==="h2o2"&&sp.v===2)){if(Math.random()<.6)s.foam.push({x:sp.x+(Math.random()-.5)*60,y:top-Math.random()*8,r:5+Math.random()*9,a:.95})}}}
+for(j=0;j<s.bub.length;j++){var b=s.bub[j];b.a++;b.y-=.4;b.x+=(Math.random()-.5)*.7;var al=1-b.a/b.l;g.strokeStyle="rgba(255,255,255,"+al+")";g.fillStyle="rgba(255,255,255,"+.3*al+")";g.lineWidth=1.4;g.beginPath();g.arc(b.x,b.y,b.r,0,7);g.fill();g.stroke()}
+s.bub=s.bub.filter(function(b){return b.a<b.l});if(s.bub.length>1400)s.bub.splice(0,300);
+for(j=0;j<s.foam.length;j++){var f=s.foam[j];f.a-=.003;f.y-=.06;g.fillStyle="rgba(255,255,255,"+Math.max(0,f.a)+")";g.beginPath();g.arc(f.x,f.y,f.r,0,7);g.fill()}
+s.foam=s.foam.filter(function(f){return f.a>0});
+if(k==="h2o2"){if(l.run)l.sec=(Date.now()-l.t0)/1000;var tm=document.getElementById("tm");if(tm)tm.textContent=l.sec.toFixed(1).replace(".",",")+" s"}}
+function frame(){if(L.hcl.step===1)draw("hcl");if(L.h2o2.step===1)draw("h2o2");requestAnimationFrame(frame)}
+home();frame();
+</script>
+</body>
+</html>
