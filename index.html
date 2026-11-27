@@ -65,7 +65,7 @@ code{background:var(--acc);padding:1px 6px;border-radius:6px}
 <nav>
 <button data-t="home" aria-selected="true" onclick="tab('home')"><span>🏠</span>Accueil</button>
 <button data-t="hcl" aria-selected="false" onclick="tab('hcl')"><span>🧪</span>HCl</button>
-<button data-t="h2o2" aria-selected="false" onclick="tab('h2o2')"><span>🫧</span>H₂O₂</button>
+<button data-t="h2o2" aria-selected="false" onclick="tab('h2o2')"><span aria-hidden="true"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="15" r="4.2"/><circle cx="16.5" cy="8" r="3.1"/><circle cx="17" cy="18" r="1.5"/></svg></span>H₂O₂</button>
 <button data-t="log" aria-selected="false" onclick="tab('log')"><span>📒</span>Carnet</button>
 <button data-t="ref" aria-selected="false" onclick="tab('ref')"><span>📚</span>Réf.</button>
 </nav>
@@ -111,7 +111,7 @@ function theme(){var r=document.documentElement;var d=r.dataset.theme==="dark"||
 function home(){var n=E.length,h=E.filter(function(e){return e.type==="HCl"}).length;
 var last=E.slice(0,3).map(function(e){return'<div class="entry"><b>'+esc(e.parcelle||"Sans nom")+'</b> · '+e.type+' · '+e.depth+' cm<br><span class="tag">'+esc(e.res.t)+'</span></div>'}).join("")||'<p class="mut">Aucun test enregistré pour le moment.</p>';
 $("#t-home").innerHTML='<div class="card"><h2>Tableau de bord</h2><div class="grid"><div class="stat"><b>'+n+'</b>tests</div><div class="stat"><b>'+h+'</b>HCl</div><div class="stat"><b>'+(n-h)+'</b>H₂O₂</div><div class="stat"><b>'+ok+'/'+tot+'</b>bonnes lectures</div></div>'+
-'<button class="btn" onclick="tab(\'hcl\')">🧪 Test HCl</button><button class="btn" onclick="tab(\'h2o2\')">🫧 Test H₂O₂</button></div>'+
+'<button class="btn" onclick="tab(\'hcl\')">🧪 Test HCl</button><button class="btn" onclick="tab(\'h2o2\')">◉ Test H₂O₂</button></div>'+
 '<div class="card"><h3>Derniers tests</h3>'+last+'</div>'+
 '<div class="card"><h2>Protocoles</h2><h3>HCl dilué (≈ 10 %)</h3><p>Quelques gouttes sur la motte, observer 10 à 30 s : intensité et durée des bulles.</p><h3>H₂O₂ (12 % ou 30 %)</h3><p>Quelques gouttes, chronomètre : durée et intensité de l’effervescence.</p>'+
 '<div class="safe"><b>⚠ Sécurité</b> : gants, lunettes, blouse. Toujours verser l’acide dans l’eau. Flacons étiquetés, rinçage à l’eau claire en cas de contact.</div></div>'}
